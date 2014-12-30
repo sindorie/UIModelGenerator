@@ -194,10 +194,10 @@ public class TraversalEventGenerater{
 							sequenceUsed = sequenceFomrLauncher;
 						}
 					}else if(sequenceFomrCurrent == null){
-						sequenceUsed = sequenceFomrCurrent;
-					}else {
-						repositionCounter += 1;
 						sequenceUsed = sequenceFomrLauncher;
+					}else {//sequenceFomrLauncher == null is true
+						repositionCounter += 1;
+						sequenceUsed = sequenceFomrCurrent;
 					}
 					
 					if(DEBUG) Utility.log(TAG, "repositionCounter,"+repositionCounter);
@@ -229,7 +229,9 @@ public class TraversalEventGenerater{
 	}
 	
 	private Event checkSequence(List<Event> newSequence, UIState targetState){
-		if(newSequence.isEmpty()){
+		if( newSequence.isEmpty()){ 
+			//Note: newSequence == null is not checked 
+			//because give nthe logic this should not happen here
 			if(DEBUG) Utility.log(TAG,"repositionSequence.isEmpty(), reposition failure");
 			//no path can be found
 			return onRepositionFailure();
