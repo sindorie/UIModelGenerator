@@ -62,15 +62,9 @@ public class Utility {
 			String[] parts = tmp.split("\n");
 			if(DEBUG) Utility.log(TAG,tmp);
 			for(String part: parts){
-				
 				if(part.contains("METHOD_STARTING")){
 					String methodName = part.split("METHOD_STARTING,")[1].trim();
-					int i = methodName.lastIndexOf(">") + 1;
-					i = Math.min(i, methodName.length());
-					String tmp1 = methodName.substring(0,i);
-					result.add(tmp1);
-					System.out.println(tmp1);
-					Utilitylog(tmp1);
+					result.add(methodName);
 				}
 			}
 			Utilitylog("\n");
