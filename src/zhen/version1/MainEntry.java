@@ -33,7 +33,7 @@ public class MainEntry {
 		//		2. The library file should be under the current working directory. 
 		
 		UIModelGenerator builder = new UIModelGenerator(app);
-		builder.buildOrRead(false);
+		builder.buildOrRead(true);
 		
 		UIModelGraph model = builder.getUIModel();
 		model.enableGUI();
