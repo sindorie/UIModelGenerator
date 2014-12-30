@@ -133,28 +133,48 @@ public class Event extends DefaultEdge implements Serializable{
 			
 			if(this.index == otherEvent.index) return true;
 			
+			//check event type. 
 			switch(this.eventType){
 			case iONCLICK:{
 				String xy1 = this.getValue(Common.event_att_click_x)+"" + this.getValue(Common.event_att_click_y);
 				String xy2 = otherEvent.getValue(Common.event_att_click_x)+"" + otherEvent.getValue(Common.event_att_click_y);
 				if(!xy1.equals(xy2)) return false;
+			}break;
+			case iPRESS:{
+				String keyHere = this.getValue(Common.event_att_keycode).toString();
+				String keyThere = otherEvent.getValue(Common.event_att_keycode).toString();
+				if(!keyHere.equals(keyThere)) return false;
+			};
 			}
+			
+			//check source and target
+			if(this.source!=null && !this.source.equals(otherEvent.source)){
+				return false;
+			}else if(this.source == null && otherEvent.source!=null){
+				return false;
 			}
 			
-			boolean emptySource1 = this.source == null;
-			boolean emptySource2 = otherEvent.source == null;
+			if(this.target!=null && !this.target.equals(otherEvent.target)){
+				return false;
+			}else if(this.target==null && otherEvent.target!= null){
+				return false;
+			}
 			
-			boolean emptyTarget1 = this.target == null;
-			boolean emptyTarget2 = otherEvent.target == null;
-
-			if(emptySource1 == emptySource2 && emptyTarget1 == emptyTarget2) return true;
-			if(emptySource1 !=  emptySource2) return false;
-			if(emptyTarget1 !=  emptyTarget2) return false;
 			
-			if(emptySource1) return false;
-			if(emptyTarget1) return false;
-			if(!otherEvent.source.equals(this.source)) return false;
-			if(!otherEvent.target.equals(this.target)) return false;
+//			boolean emptySource1 = this.source == null;
+//			boolean emptySource2 = otherEvent.source == null;
+//			
+//			boolean emptyTarget1 = this.target == null;
+//			boolean emptyTarget2 = otherEvent.target == null;
+//
+//			if(emptySource1 == emptySource2 && emptyTarget1 == emptyTarget2) return true;
+//			if(emptySource1 !=  emptySource2) return false;
+//			if(emptyTarget1 !=  emptyTarget2) return false;
+//			
+//			if(emptySource1) return false;
+//			if(emptyTarget1) return false;
+//			if(!otherEvent.source.equals(this.source)) return false;
+//			if(!otherEvent.target.equals(this.target)) return false;
 			return true;
 		}
 		return false;
