@@ -62,7 +62,7 @@ public class UIModelGenerator {
 		System.out.println("Device serial: "+serial);
 		
 		RunTimeInformation rInfo = new RunTimeInformation(packageName,deviceInfo);
-		executer = new Executer(packageName,serial);
+		this.executer = new Executer(packageName,serial);
 		rInfo.setExecuter(executer);
 		TraversalEventGenerater eventGen = new TraversalEventGenerater(names,packageName);
 		UIExplorer explore = new UIExplorer(executer, eventGen, rInfo);
@@ -102,7 +102,7 @@ public class UIModelGenerator {
 				}
 			}while(true);
 			Executer ex = new Executer(app.getPackageName(), serial);
-			ex.init();
+			this.executer = ex;
 			return ex;
 		}else{
 			return this.executer;
