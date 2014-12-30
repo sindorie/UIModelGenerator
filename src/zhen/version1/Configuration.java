@@ -10,7 +10,7 @@ import main.Paths;
 public class Configuration {
 	
 	public static String AndroidSDKPath = Paths.androidSDKPath;
-	public static String AppDataDir = "generated/";
+	public static String AppDataDir = Paths.appDataDir;
 	
 	public static String AndroidToolPath = AndroidSDKPath+"sdk/tools/";
 	public static String AndroidPlatformToolPath = AndroidSDKPath+"sdk/platform-tools/";
