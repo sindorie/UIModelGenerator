@@ -41,6 +41,7 @@ public class UIModelGraph implements Serializable{
 	private final static String TAG = "UIModelGraph";
 	private UIState lastState;
 	private ListenableDirectedMultigraph graph;
+	private ListenableDirectedMultigraph graphWithNoLauncher;
 //	private boolean isInited = false;
 	private List<UIState> knownVertices = new ArrayList<UIState>();
 	
@@ -87,6 +88,10 @@ public class UIModelGraph implements Serializable{
 	
 	public List<Event> getEventSequence(UIState source, UIState target){
 		List<Event> path = DijkstraShortestPath.findPathBetween(this.getGraph(), source, target);
+		return path;
+	}
+	public static List<Event> getEventSequence(ListenableDirectedMultigraph graph, UIState source, UIState target){
+		List<Event> path = DijkstraShortestPath.findPathBetween(graph, source, target);
 		return path;
 	}
 	
@@ -140,6 +145,13 @@ public class UIModelGraph implements Serializable{
 		return graph;
 	}
 	
+	public ListenableDirectedMultigraph cloneWithNoLauncher(){
+		if(graphWithNoLauncher != null) return graphWithNoLauncher;
+		graphWithNoLauncher = (ListenableDirectedMultigraph) this.graph.clone();
+		graphWithNoLauncher.removeVertex(UIState.Launcher);
+		return graphWithNoLauncher;
+	}
+	
 	/**
 	 * get all the UI encountered
 	 * @return
@@ -152,7 +164,7 @@ public class UIModelGraph implements Serializable{
 		JFrame frame = new JFrame();
 		this.enableGUI(frame.getContentPane());
         frame.setTitle("LayoutRelationViewer");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.pack();
         frame.setVisible(true);
 	}

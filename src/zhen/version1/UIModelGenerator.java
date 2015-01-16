@@ -11,6 +11,7 @@ import analysis.StaticInfo;
 import staticFamily.StaticApp;
 import staticFamily.StaticClass;
 import zhen.version1.Support.Bundle;
+import zhen.version1.Support.CommandLine;
 import zhen.version1.Support.Utility;
 import zhen.version1.component.DeviceInformaion;
 import zhen.version1.component.Event;
@@ -36,6 +37,7 @@ public class UIModelGenerator {
 	private Executer executer;
 	private Bundle bundle;
 	private DeviceInformaion deviceInfo;
+	private List<Event> uniqueEventList;
 	
 	public UIModelGenerator(StaticApp app){
 		this.app = app;
@@ -118,6 +120,15 @@ public class UIModelGenerator {
 	public List<Event> getEventDeposit(){
 		return (List<Event>) this.bundle.os[2];
 	}
-	
-
+ 
+	public List<Event> getUniqueEventList(){
+		if(uniqueEventList != null) return uniqueEventList;
+		uniqueEventList = new ArrayList<Event>();
+		for(Event event: this.getEventDeposit()){
+			if(!uniqueEventList.contains(event)){
+				uniqueEventList.add(event);
+			}
+		}
+		return uniqueEventList; 
+	}
 }

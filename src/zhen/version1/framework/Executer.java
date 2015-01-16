@@ -207,7 +207,6 @@ public class Executer {
 		if (DEBUG) Utility.log(TAG, "termination finished");
 	}
 
-
 	/** Monkey method **/
 	
 	

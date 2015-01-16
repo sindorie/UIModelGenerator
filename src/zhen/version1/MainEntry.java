@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.jgrapht.graph.DefaultListenableGraph;
+
 import staticFamily.StaticApp;
 import zhen.version1.component.Event;
 import zhen.version1.component.UIModelGraph;
@@ -36,7 +38,7 @@ public class MainEntry {
 		builder.buildOrRead(true);
 		
 		UIModelGraph model = builder.getUIModel();
-		model.enableGUI();
+//		model.enableGUI();
 		
 		System.out.println("getEventDeposit");
 		for(Event e: builder.getEventDeposit()){
@@ -48,8 +50,20 @@ public class MainEntry {
 			System.out.println(entry);
 		}
 		
-
-		Executer executer = builder.getExecutor();
+		DefaultListenableGraph<UIState, Event> original = model.getGraph();
+		DefaultListenableGraph<UIState, Event> copy = (DefaultListenableGraph<UIState, Event>) model.getGraph().clone();
+		UIState launcher = model.getKnownVertices().get(0);
+		
+		System.out.println("copy.removeVertex(launcher)");
+		copy.removeVertex(launcher);
+		
+		boolean has = original.containsVertex(launcher);
+		System.out.println("original has launcher: "+has);
+		
+		
+		
+		
+//		Executer executer = builder.getExecutor();
 		
 //		ExampleProcedure(model, executer);
 	}
