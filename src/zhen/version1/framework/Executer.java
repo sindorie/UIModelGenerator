@@ -85,7 +85,7 @@ public class Executer {
 			String stopCommand = "am force-stop "+packageName;
 			CommandLine.executeShellCommand(stopCommand, serial);
 //			com.example.backupHelper/com.example.backupHelper.BackupActivity
-			String launchCommand = "am start -f 32768 -W -n " + packageName + "/" + actName;
+			String launchCommand = "am start -S -f 32768 -W -n " + packageName + "/" + actName;
 			CommandLine.executeShellCommand(launchCommand, serial);
 		}break;
 		case Event.iREINSTALL:{
@@ -93,10 +93,8 @@ public class Executer {
 			String actName = (String) event.getValue(Common.event_att_actname);
 //			String uninstallCommand = "pm uninstall -k "+packageName;
 //			CommandLine.executeShellCommand(uninstallCommand, serial);
-			
 			String installCommand = "install -r "+ event.getValue(Common.apkPath);
 			CommandLine.executeADBCommand(installCommand, serial);
-			
 			if(actName != null){
 				String launchCommand = "am start  -f  32768 -W -n " + packageName + "/" + actName;
 				CommandLine.executeShellCommand(launchCommand, serial);
@@ -104,12 +102,14 @@ public class Executer {
 		}break;
 		case Event.iPRESS:{
 			String keycode = (String)event.getValue(Common.event_att_keycode);
-			this.press(keycode);
+			String inputCommand = "input keyevent " + keycode;
+			CommandLine.executeShellCommand(inputCommand, serial);
 		}break;
 		case Event.iONCLICK:{
 			String x = event.getValue(Common.event_att_click_x).toString();
 			String y = event.getValue(Common.event_att_click_y).toString();
-			this.click(x, y);
+			String inputCommand = "input tap " + x + " " + y;
+			CommandLine.executeShellCommand(inputCommand, serial);
 		}break;
 		case Event.iUPDATE:{
 			//TODO -- should do nothing
@@ -157,7 +157,7 @@ public class Executer {
 	 */
 	public boolean init(){
 		if (DEBUG) Utility.log(TAG, "initialization starts");
-		try {
+/*		try {
 			monkeyProcess = Runtime.getRuntime().exec(Configuration.MonkeyLocation);
 			ostream = new BufferedOutputStream(monkeyProcess.getOutputStream());
 			estream = new BufferedInputStream(monkeyProcess.getErrorStream());
@@ -188,14 +188,14 @@ public class Executer {
 				monkeyProcess.destroy();
 			if (DEBUG) Utility.log(TAG, "initialization fails");
 			return false;
-		} 
+		} */
 		return true;
 	}
 	/**
 	 * Close/terminate necessary component
 	 */
 	public void terminate(){
-		if (monkeyProcess != null) {
+/*		if (monkeyProcess != null) {
 			try {
 				ostream.close();
 				istream.close();
@@ -204,7 +204,7 @@ public class Executer {
 			}
 			monkeyProcess.destroy();
 		}
-		if (DEBUG) Utility.log(TAG, "termination finished");
+		if (DEBUG) Utility.log(TAG, "termination finished");*/
 	}
 
 	/** Monkey method **/
@@ -215,7 +215,7 @@ public class Executer {
 	 * @param x
 	 * @param y
 	 */
-	public void click(String x, String y) {
+	private void click(String x, String y) {
 		touch(x, y, DOWN_AND_UP);
 	}
 	/**
@@ -224,7 +224,7 @@ public class Executer {
 	 * @param y
 	 * @param type	-- allowed string is defined in this class
 	 */
-	public void touch(String x, String y, String type) {
+	private void touch(String x, String y, String type) {
 		String toWrite = "device.touch(" + x + "," + y + "," + type + ")\n";
 		try {
 			ostream.write(toWrite.getBytes());
@@ -238,7 +238,7 @@ public class Executer {
 	 * type msg to the device
 	 * @param msg
 	 */
-	public void type(String msg) {
+	private void type(String msg) {
 		String toWrite = "device.type('" + msg + "')\n";
 		try {
 			ostream.write(toWrite.getBytes());
@@ -251,14 +251,14 @@ public class Executer {
 	/**
 	 * wake up device
 	 */
-	public void wakeDeviceup() {
+	private void wakeDeviceup() {
 		sendCommand("device.wake()\n");
 	}
 	/**
 	 * press a key e.g. Home
 	 * @param keyCode -- see KeyEvent.KEYCODE_
 	 */
-	public void press(String keyCode) {
+	private void press(String keyCode) {
 		// http://developer.android.com/reference/android/view/KeyEvent.html
 		// all string name begins with "KEYCODE_"
 		sendCommand("device.press('" + keyCode + "')\n");
@@ -267,14 +267,14 @@ public class Executer {
 	 * press a key e.g. Home
 	 * @param keyCode -- see KeyEvent.KEYCODE_
 	 */
-	public void press(int keyCode) {
+	private void press(int keyCode) {
 		sendCommand("device.press('" + keyCode + "')\n");
 	}
 	/**
 	 * ask monkey to sleep for a duration
 	 * @param sec
 	 */
-	public void sleep(int sec) {
+	private void sleep(int sec) {
 		String toWrite = "MonkeyRunner.sleep(" + sec + ")\n";
 		try {
 			ostream.write(toWrite.getBytes());
@@ -288,7 +288,7 @@ public class Executer {
 	 * install an application 
 	 * @param apkPath 
 	 */
-	public void install(String apkPath) {
+	private void install(String apkPath) {
 		String toWrite = "device.installPackage('" + apkPath + "')\n";
 		try {
 			ostream.write(toWrite.getBytes());
@@ -308,7 +308,7 @@ public class Executer {
 			e.printStackTrace();
 		}
 	}
-	public void connectDevice() {
+	private void connectDevice() {
 		String toWrite = "device = MonkeyRunner.waitForConnection(60, '"+serial+"')\n";
 		if(DEBUG)Utility.log(TAG, "Connecting");
 		try {
@@ -353,6 +353,7 @@ public class Executer {
 			}
 		} while (isNotReadyForNextInput(output));
 	}
+	
 	private String getMonkeyOutput() {
 		try {
 			int count = istream.available();
@@ -393,3 +394,4 @@ public class Executer {
 		}
 	}
 }
+

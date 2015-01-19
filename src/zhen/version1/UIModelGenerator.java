@@ -36,13 +36,11 @@ public class UIModelGenerator {
 	private StaticApp app;
 	private Executer executer;
 	private Bundle bundle;
-	private DeviceInformaion deviceInfo;
+	private static DeviceInformaion deviceInfo;
 	private List<Event> uniqueEventList;
 	
 	public UIModelGenerator(StaticApp app){
 		this.app = app;
-		deviceInfo = new DeviceInformaion(); 
-
 	}
 	
 	private void generate(){
@@ -84,17 +82,23 @@ public class UIModelGenerator {
 		File target = new File(path+name);
 		if(!target.exists() || force){
 			System.out.println("building");
+			if(deviceInfo == null) deviceInfo = new DeviceInformaion(); 
+
 			this.generate();
 			Utility.dumpData(bundle,path+name);
 			System.out.println("finished");
 		}else{
+			System.out.println("loading");
 			this.bundle = (Bundle) Utility.restoreData(path+name);
+			System.out.println("loaded");
 		}
 	}
 	
 	public Executer getExecutor(){
 		if(this.executer == null){
 			String serial = null;
+			if(deviceInfo == null) deviceInfo = new DeviceInformaion(); 
+			
 			do{
 				try { Thread.sleep(100);
 				} catch (InterruptedException e) { }

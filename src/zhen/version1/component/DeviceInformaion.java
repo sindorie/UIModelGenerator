@@ -3,6 +3,7 @@ package zhen.version1.component;
 import java.util.ArrayList;
 import java.util.List;
 
+import main.Paths;
 import zhen.version1.Configuration;
 import zhen.version1.Support.Utility;
 
@@ -27,26 +28,24 @@ public class DeviceInformaion {
 	
 	private Window[] windowList;
 	private int focusedWindowHash;
-//	private String systemAct = "SearchPanelNavigationBarStatusBarKeyguardKeyguardScrimInputMethodcom.android.systemui.ImageWallpaper";
-	
+
 	public DeviceInformaion(){
 		init();
-		System.out.println("DeviceInformaion init finished");
 	}
 	
 	private void init(){
-		DeviceBridge.initDebugBridge(Configuration.ADBPath);
+		DeviceBridge.initDebugBridge(Paths.adbPath);
 		DeviceBridge.startListenForDevices(listener1);
-//		DeviceBridge.startListenForDevices(listener2);
 		while(mDevice == null){
 			try { Thread.sleep(200); } catch (InterruptedException e) { }
 		}//wait until a device is found
-//		DeviceBridge.stopListenForDevices(listener1);
 		try { Thread.sleep(50); } catch (InterruptedException e) { }
 		device = HvDeviceFactory.create(mDevice);
+		boolean viewDebugEnable = device.isViewDebugEnabled();
+		System.out.println("isViewDebugEnabled: "+ viewDebugEnable);
 		device.initializeViewDebug();
 		try { Thread.sleep(50); } catch (InterruptedException e) { }
-		device.addWindowChangeListener(windowListener);
+		device.addWindowChangeListener(windowListener);	
 	}
 	
 	public Window[] getWindowList(){

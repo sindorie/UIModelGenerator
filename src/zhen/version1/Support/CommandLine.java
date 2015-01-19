@@ -23,7 +23,7 @@ import zhen.version1.Configuration;
 
 
 public class CommandLine {
-	public static boolean DEBUG = true;
+	public static boolean DEBUG = false;
 	public static String TAG = "CommandLine";
 
 	public static String unlockScreenShellCommand = "input keyevent 82";

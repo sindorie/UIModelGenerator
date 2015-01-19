@@ -34,44 +34,10 @@ public class UIExplorer {
 	public static boolean DEBUG = true;
 	public static String TAG = "UIExplorer";
 	
+	public static int maxLoop = 100;
 	boolean operating = true;
 	boolean debug = true; 
-//	private boolean enableStepControl = false;
-	private int maxStep, currentStep;
-//	private StepControlCallBack stepControl;
-	/**
-	 * This is primarily for debug purpose
-	 * which allows the user to check information for each loop
-	 */
-//	public final static StepControlCallBack defaultCallBack = new StepControlCallBack(){
-//		private Scanner sc = new Scanner(System.in);
-//		@Override
-//		public void action(Framework frame) {
-//			while(true){
-//				String read = sc.nextLine().trim();
-//				Utility.info(TAG,"Rcv:"+read);
-//				if(read.equals("1")){
-//					Stack<UIState> stack = frame.traverser.getUIStack();
-//					for(UIState state : stack){
-//						Utility.info( TAG, state);
-//					}
-//				}else if(read.equals("2")){
-//					Map<String, List<Event>> map = frame.rInfo.getMethodEventMap();
-//					for(Entry<String, List<Event>> entry : map.entrySet()){
-//						Utility.info(RunTimeInformation.TAG,entry);
-//					}
-//				}else if(read.equals("3")){
-//					WindowInformation win = frame.rInfo.getUIModel().getCurrentState().winInfo;
-//					Utility.info(TAG, win!=null?win.toString():"null");
-//				}else if(read.equals("h")){
-//					Utility.info(UIExplorer.TAG,"1: show stack, 2: get method map");
-//				}else if(read.equals("stop")){
-//					frame.explorer.requestStop(); break;
-//				}else break;
-//			}	
-//		}
-//	};
-	
+	private int currentStep;
 	private Executer executer;
 	private TraversalEventGenerater traverser;
 	private RunTimeInformation rInfo;
@@ -99,32 +65,24 @@ public class UIExplorer {
 		
 		currentStep = 0;
 		while(checkRestriction()){
-//			if(enableStepControl){ stepControlCallBack();}
 			Event event = traverser.nextEvent(rInfo);
 			if(DEBUG)Utility.log(TAG, "traverse next Event,"+event);
 			if(event == null) break;
 			executer.applyEvent(event);
 			rInfo.update(event);
 			currentStep += 1;
+			if(currentStep >= maxLoop){
+				System.out.println("Max iteration reached");
+				break;
+			}
 		}
 	}
-	
-//	public boolean reachUIState(UIState state){
-////		TraversalEventGenerater traverser = frame.traverser;
-////		RunTimeInformation rInfo = frame.rInfo;
-////		Executer executer = frame.traverseExecuter;
-//		//TODO
-////		rInfo.getEventSequence(layout)
-//		
-//		return false;
-//	}
 	
 	/**
 	 * check if any restriction is met. e.g. max step 
 	 * @return
 	 */
 	public boolean checkRestriction(){
-		if(maxStep>0 && currentStep>=maxStep)return false; 
 		if(operating == false) return false;
 		else return true;
 	}
@@ -132,21 +90,4 @@ public class UIExplorer {
 	public void requestStop(){
 		this.operating = false;
 	}
-	
-//	public void enableStepControl(boolean flag){
-//		enableStepControl = flag;
-//	}
-//	public void setStepControlCallBack(StepControlCallBack callback){
-//		stepControl = callback;
-//	}
-//	public static interface StepControlCallBack{
-//		public void action(Framework frame);
-//	}
-	
-//	private void stepControlCallBack(){
-//		if(this.stepControl == null) return;
-//		if(DEBUG) Utility.log(TAG,"UIExplorer Step Control.");
-//		stepControl.action(this.frame);
-//		if(DEBUG) Utility.log(TAG,"UIExplorer Operation Continues.");
-//	}
 }

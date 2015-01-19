@@ -179,7 +179,7 @@ public class RunTimeInformation{
 		
 		WindowInformation targetInfo = null;
 		
-		System.out.println("size: "+visibleWindows.length);
+//		System.out.println("size: "+visibleWindows.length);
 		
 
 		

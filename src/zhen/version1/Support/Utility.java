@@ -22,7 +22,7 @@ import java.util.logging.Logger;
 import zhen.version1.Configuration;
 
 public class Utility {
-	public static boolean DEBUG = true;
+	public static boolean DEBUG = false;
 	public static String TAG = "Utility";
 	public static List<String> readInstrumentationFeedBack(String serial){
 		ArrayList<String> result = new ArrayList<String>();

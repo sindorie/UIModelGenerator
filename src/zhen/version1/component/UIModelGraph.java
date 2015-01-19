@@ -37,7 +37,7 @@ import com.android.hierarchyviewerlib.models.ViewNode;
  */
 public class UIModelGraph implements Serializable{
 	
-	public static boolean DEBUG = true;
+	public static boolean DEBUG = false;
 	private final static String TAG = "UIModelGraph";
 	private UIState lastState;
 	private ListenableDirectedMultigraph graph;
