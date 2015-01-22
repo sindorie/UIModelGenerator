@@ -7,6 +7,7 @@ import java.util.Set;
 import org.jgrapht.graph.DefaultListenableGraph;
 
 import staticFamily.StaticApp;
+import zhen.version1.component.DeviceInformaion;
 import zhen.version1.component.Event;
 import zhen.version1.component.UIModelGraph;
 import zhen.version1.component.UIState;
@@ -17,7 +18,21 @@ import analysis.StaticInfo;
 public class MainEntry {
 
 	public static void main(String[] args){
-
+		
+		DeviceInformaion info = new DeviceInformaion();
+		System.out.println("here");
+		
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
+		System.out.println(info.getDeviceList().size());
+		
+		System.out.println(info.getPrimaryDevice().getSerialNumber());
+		if(true) return;
 		
 		String path = "/home/zhenxu/workspace/APK/CalcA.apk";
 		StaticApp app = StaticInfo.initAnalysis(path, false);
@@ -46,19 +61,19 @@ public class MainEntry {
 		}
 
 		System.out.println("getEventMethodMap");
-		for(Entry<String, List<Event>>  entry : builder.getEventMethodMap().entrySet() ){
+		for(Entry<String, List<Event>>  entry : builder.getMethodEventMap().entrySet() ){
 			System.out.println(entry);
 		}
 		
-		DefaultListenableGraph<UIState, Event> original = model.getGraph();
-		DefaultListenableGraph<UIState, Event> copy = (DefaultListenableGraph<UIState, Event>) model.getGraph().clone();
-		UIState launcher = model.getKnownVertices().get(0);
+//		DefaultListenableGraph<UIState, Event> original = model.getGraph();
+//		DefaultListenableGraph<UIState, Event> copy = (DefaultListenableGraph<UIState, Event>) model.getGraph().clone();
+//		UIState launcher = model.getKnownVertices().get(0);
 		
-		System.out.println("copy.removeVertex(launcher)");
-		copy.removeVertex(launcher);
-		
-		boolean has = original.containsVertex(launcher);
-		System.out.println("original has launcher: "+has);
+//		System.out.println("copy.removeVertex(launcher)");
+//		copy.removeVertex(launcher);
+//		
+//		boolean has = original.containsVertex(launcher);
+//		System.out.println("original has launcher: "+has);
 		
 		
 		

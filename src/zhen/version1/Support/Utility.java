@@ -19,17 +19,25 @@ import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.swing.tree.DefaultMutableTreeNode;
+
 import zhen.version1.Configuration;
 
 public class Utility {
 	public static boolean DEBUG = false;
 	public static String TAG = "Utility";
+	
+	/**
+	 * Given a serial value which is used to identify the device,
+	 * read the logcat information. 
+	 * 
+	 * Situation that the process never terminated happened and therefore
+	 * a timeout function is used.
+	 * @param serial
+	 * @return
+	 */
 	public static List<String> readInstrumentationFeedBack(String serial){
 		ArrayList<String> result = new ArrayList<String>();
-		/**
-		 * Situation that the process never terminated happened.
-		 */
-//		System.out.println("Input serail: "+serial);
 		try{
 			String command = Configuration.ADBPath + " -s "+serial+" logcat -v thread -d  -s "+Configuration.InstrumentationTag;
 			final Process pc = Runtime.getRuntime().exec(command);
@@ -62,23 +70,21 @@ public class Utility {
 			String[] parts = tmp.split("\n");
 			if(DEBUG) Utility.log(TAG,tmp);
 			for(String part: parts){
-				if(part.contains("METHOD_STARTING")){
-					String methodName = part.split("METHOD_STARTING,")[1].trim();
-					result.add(methodName);
+				if(part.contains("METHOD_STARTING,")){
+					result.add(part);
+				}else if(part.contains("METHOD_RETURNING,")){
+					result.add(part);
 				}
 			}
-			Utilitylog("\n");
 			pc.destroy();
 		}catch(Exception e){}
 		return result;
-	}
+	} 
 	
-	
-//	public static void main(String[] args){
-//		System.out.println("feedback: "+readInstrumentationFeedBack("0794aad2"));
-//		System.out.println("feedbakc ends");
-//	}
-	
+	/**
+	 * clear the logcat.
+	 * @param serial
+	 */
 	public static void clearLogcat(String serial){
 		try {
 			Runtime.getRuntime().exec(Configuration.ADBPath + " -s "+serial+" logcat -c").waitFor();
@@ -87,6 +93,11 @@ public class Utility {
 		}
 	}
 	
+	/**
+	 * get the user id of the application
+	 * @param appName
+	 * @return
+	 */
 	public static String getUid(String appName){
 		String command = Configuration.ADBPath+ " shell dumpsys "+appName+" | grep userId=";
 		try {
@@ -120,45 +131,45 @@ public class Utility {
 		return null;
 	}
 	
-	public static int findFirstFalse(boolean[] arr){
-		for(int i=0;i<arr.length;i++){
-			if(arr[i] == false) return i;
-		}
-		return -1;
-	}
+//	public static int findFirstFalse(boolean[] arr){
+//		for(int i=0;i<arr.length;i++){
+//			if(arr[i] == false) return i;
+//		}
+//		return -1;
+//	}
 	
-	public static Logger setupLogger(Class clazz){
-		Logger logger = Logger.getLogger(clazz.getName());
-		FileHandler fhandler;
-		ConsoleHandler chandler;
-		try {
-			for(Handler handle : logger.getHandlers()){
-				handle.setLevel(Level.FINER);
-	        }
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return logger;
-	}
+//	public static Logger setupLogger(Class clazz){
+//		Logger logger = Logger.getLogger(clazz.getName());
+//		FileHandler fhandler;
+//		ConsoleHandler chandler;
+//		try {
+//			for(Handler handle : logger.getHandlers()){
+//				handle.setLevel(Level.FINER);
+//	        }
+//			
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//		return logger;
+//	}
 	
-	public static void removeFileUnderFolder(String folderName){
-		File folder = new File(folderName);
-		String[] names = folder.list();
-		for(String name:names){
-			File afile = new File(folderName+"/"+name);
-			afile.delete();
-		}
-	}
+//	public static void removeFileUnderFolder(String folderName){
+//		File folder = new File(folderName);
+//		String[] names = folder.list();
+//		for(String name:names){
+//			File afile = new File(folderName+"/"+name);
+//			afile.delete();
+//		}
+//	}
 	
-	public static void log(String msg){
-		System.out.println(msg);
-	}
-	
-	public static void info(String msg){
-		System.out.println(msg);
-	}
-	
+//	public static void log(String msg){
+//		System.out.println(msg);
+//	}
+//	
+//	public static void info(String msg){
+//		System.out.println(msg);
+//	}
+//	
 	public static void info(String tag, Object input ){
 		informationBuilder(tag,input);
 	}
@@ -213,6 +224,11 @@ public class Utility {
 		}
 	}
 	
+	/**
+	 * General helper function which read data from path directory
+	 * @param path
+	 * @return
+	 */
 	public static Object restoreData(String path){
 		try {
 			FileInputStream fin = new FileInputStream(path);
@@ -235,19 +251,5 @@ public class Utility {
 			e.printStackTrace();
 		}
 		return null;
-	}
-	
-	static PrintWriter pw = null;
-	static void Utilitylog(Object o ){
-		if(pw == null){
-			try {
-				pw = new PrintWriter(new File("Utility_log"));
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		pw.println(o.toString());
-		pw.flush();
 	}
 }

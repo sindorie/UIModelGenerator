@@ -30,6 +30,7 @@ public class DeviceInformaion {
 	private int focusedWindowHash;
 
 	public DeviceInformaion(){
+		System.out.println("DeviceInformaion");
 		init();
 	}
 	

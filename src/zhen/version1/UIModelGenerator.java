@@ -83,7 +83,6 @@ public class UIModelGenerator {
 		if(!target.exists() || force){
 			System.out.println("building");
 			if(deviceInfo == null) deviceInfo = new DeviceInformaion(); 
-
 			this.generate();
 			Utility.dumpData(bundle,path+name);
 			System.out.println("finished");
@@ -97,8 +96,9 @@ public class UIModelGenerator {
 	public Executer getExecutor(){
 		if(this.executer == null){
 			String serial = null;
+			System.out.println("getExecutor");
 			if(deviceInfo == null) deviceInfo = new DeviceInformaion(); 
-			
+			System.out.println("getExecutor deviceInfo");
 			do{
 				try { Thread.sleep(100);
 				} catch (InterruptedException e) { }
@@ -107,6 +107,7 @@ public class UIModelGenerator {
 					break;
 				}
 			}while(true);
+			System.out.println("getExecutor serial");
 			Executer ex = new Executer(app.getPackageName(), serial);
 			this.executer = ex;
 			return ex;
@@ -115,16 +116,40 @@ public class UIModelGenerator {
 		}
 	}
 	
+	/**
+	 * get the graph where UIstates are the vertex and events are the edeges
+	 * @return UIModelGraph 
+	 */
 	public UIModelGraph getUIModel(){
 		return (UIModelGraph) this.bundle.os[0];
 	}
-	public Map<String, List<Event>> getEventMethodMap(){
+	/**
+	 * get a map between methods and lists of events
+	 * Each event in a list triggered the corresponding method during
+	 * UI model building. 
+	 * @return
+	 */
+	public Map<String, List<Event>> getMethodEventMap(){
 		return (Map<String, List<Event>>) this.bundle.os[1];
 	}
+	
+	/**
+	 * get the event deposit which contains all the events in sequential order
+	 * other than closing keyboard.
+	 * 
+	 * @return
+	 */
 	public List<Event> getEventDeposit(){
 		return (List<Event>) this.bundle.os[2];
 	}
  
+	/**
+	 * get a list of unique events
+	 * 
+	 * Two events are consider equal if they have the same type and the same source UI
+	 * and target UI.
+	 * @return
+	 */
 	public List<Event> getUniqueEventList(){
 		if(uniqueEventList != null) return uniqueEventList;
 		uniqueEventList = new ArrayList<Event>();

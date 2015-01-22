@@ -23,8 +23,7 @@ import zhen.version1.component.UIState;
 import zhen.version1.component.WindowInformation;
  
 /**
- * Responsibility: Keep track of runtime information: Logcat,layout,JDB,System
- * 
+ * Responsibility: Keep track of runtime information: Logcat,layout
  * @author zhenxu
  *
  */
@@ -34,24 +33,20 @@ public class RunTimeInformation{
 	private static String winIgnoredList = "Toast";
 	private String packageName;
 	private Executer executer;
-	/**
-	 * the ui information for the device
-	 */
+
 	private DeviceInformaion deviceLayout;
-	/**
-	 * A graph based UIModel
-	 */
+
 	private UIModelGraph UIModel;
-	/**
-	 * Map between method name and event
-	 */
+	//a map between methods and lists of events. Each event in a list triggers
+	//a corresponding method. 
 	private Map<String,List<Event>> methodEventMap = new HashMap<String,List<Event>>();
-	
+	//all events which has been applied to the application (excludes closing keyboard)
 	private List<Event> eventDeposit = new ArrayList<Event>();
 	
 	/**
 	 * 
-	 * @param frame
+	 * @param packageName -- the name of the package
+	 * @param deviceInfo 
 	 */
 	public RunTimeInformation(String packageName, DeviceInformaion deviceInfo){
 		this.deviceLayout = deviceInfo;
@@ -179,10 +174,6 @@ public class RunTimeInformation{
 		
 		WindowInformation targetInfo = null;
 		
-//		System.out.println("size: "+visibleWindows.length);
-		
-
-		
 		for(WindowInformation info : visibleWindows){
 			if(info.pkgName.equals(this.packageName) && !winIgnoredList.contains(info.name)){
 				targetInfo = info;
@@ -194,7 +185,6 @@ public class RunTimeInformation{
 		Window topWin = null;
 		if(targetInfo == null){	//which means no app window visible
 			topWin = deviceLayout.getFocusedWindow();
-			
 		}else{
 			//find the first one that has the same name
 			for(int index = 0; index < winList.length; index ++){
@@ -207,7 +197,6 @@ public class RunTimeInformation{
 		}
 		if(DEBUG) Utility.log(TAG, "topWin, "+topWin);
 		//Maybe want to check which is first drawn, focused or top
-		
 		UIState previous = this.UIModel.getCurrentState();
 		String targetTitle = topWin.getTitle();
 		String parts[] = getAppAndActName(targetTitle);
@@ -260,24 +249,32 @@ public class RunTimeInformation{
 			this.UIModel.addTransition(lastEvent, newState);
 		}break;
 		}
-		lastEvent.addMethodHiets(logcatFeedback);
-		for(String hit : logcatFeedback){
-			if(methodEventMap.containsKey(hit)){
-				List<Event> eventList = methodEventMap.get(hit);
-				eventList.add(lastEvent);
-			}else{
-				List<Event> eventList = new ArrayList<Event>();
-				eventList.add(lastEvent);
-				methodEventMap.put(hit, eventList);
+		
+		int counter = 0;
+		List<String> filtered = new ArrayList<String>();
+		for(String mes : logcatFeedback){
+			if(mes.contains("METHOD_STARTING,")){
+				String[] mesPart = mes.split("METHOD_STARTING,");
+				String methodSig = mesPart[1].trim();
+				filtered.add(methodSig);
+				if(counter == 0){
+					if(methodEventMap.containsKey(methodSig)){
+						List<Event> eventList = methodEventMap.get(methodSig);
+						if(!eventList.contains(lastEvent)) eventList.add(lastEvent);
+					}else{
+						List<Event> eventList = new ArrayList<Event>();
+						eventList.add(lastEvent);
+						methodEventMap.put(methodSig, eventList);
+					}
+				}
+				counter += 1;
+			}else if(mes.contains("METHOD_RETURNING,")){
+				counter -= 1;
 			}
 		}
-		
+		lastEvent.addMethodHiets(filtered);
 		lastEvent.operationCount += 1;
 		eventDeposit.add(lastEvent);
-		
-		
-		//check other system info
-		//TODO
 	}
 	
 	/**
